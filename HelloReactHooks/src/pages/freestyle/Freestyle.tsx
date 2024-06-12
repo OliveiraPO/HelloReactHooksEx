@@ -16,7 +16,7 @@ const displayPedidos = (pedidos: any) : ReactNode => {
 
   return result
 }
-
+/*op*/
 const FreestylePage = (): ReactElement => {
   const [pedidos, setPedidos] = useState([])
   const [flavorName, setFlavorName] = useState("")
