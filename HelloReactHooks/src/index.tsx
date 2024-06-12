@@ -10,7 +10,7 @@ import NewPage from "./pages/simple/NewPage"
 import HooksPage from "./pages/hooks/Hooks"
 import RequiredFieldForm from "./pages/form/RequiredFieldForm"
 import FreestylePage from "./pages/freestyle/Freestyle"
-
+/*opa*/
 const router = createBrowserRouter([
   {
     path: "/",
