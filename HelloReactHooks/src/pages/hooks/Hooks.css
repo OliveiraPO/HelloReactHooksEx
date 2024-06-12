@@ -1,0 +1,12 @@
+.page {
+  margin-top: 20px;
+}
+
+.container {
+  display: flex;
+  width: 100vw;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}

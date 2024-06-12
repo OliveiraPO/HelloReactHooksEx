@@ -1,0 +1,26 @@
+.page {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.container-form {
+  display: flex;
+  width: 100vw;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 2px solid #999;
+  background-color: #dcdcdc;
+  width: 300px;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+input[type="text"] {
+  outline: none;
+  line-height: 20px;
+  font-size: medium;
+}
