@@ -1,7 +1,10 @@
 import React, { ReactElement, ReactNode, useEffect, useState } from "react"
 
-const FreestylePage = (): ReactElement => {
+const CentralPedidosPage = (): ReactElement => {
   const [pedidos, setPedidos] = useState([])
+  const [pedidosRestaurante, setPedidosRestaurante] = useState([])
+  const [pedido, setPedido] = useState(null)
+  const [restaurantNamePatch, setRestaurantNamePatch] = useState("")
   const [restaurantName, setRestaurantName] = useState("")
   const [pratoName, setPratoName] = useState("")
   const [newId, setNewId] = useState("")
@@ -11,10 +14,16 @@ const FreestylePage = (): ReactElement => {
   const [pratoNameForUpdate, setPratoNameForUpdate] = useState("");
   const [newQuantityForUpdate, setNewQuantityForUpdate] = useState(0);
   const [idPedido, setIdPedido] = useState("");
-  const [pedidoEncontrado, setPedidoEncontrado] = useState(null);
+  const [idPedidoPatch, setIdPedidoPatch] = useState("");
+  
+
 
   useEffect(() => {
     fetchData()
+  }, [])
+
+  useEffect(() => {
+    buscarPedidoPorId()
   }, [])
 
   const fetchData = async () => {
@@ -76,24 +85,92 @@ const listaPedidos = (pedidos: any) : ReactNode => {
 
   return result
 }
+const listaPedidosRestaurante = (pedidosRestaurante: any) : ReactNode => {
+  const result : any = []
+  if(pedidosRestaurante){
+    pedidosRestaurante.forEach((pedido: any) => {
+      result.push(
+       <h2 style={{ width: "300px", height: "150px", border: "1px solid black", borderRadius: "20px", display: "flex", flexDirection: "column" }}>
+        <br />
+        Restaurante: {pedido.restaurante}
+        <br />
+        Prato: {pedido.prato}
+        <br />
+        Quantidade: {pedido.quantidade}
+        </h2>
+      )
+    })
+  }
 
-{/*const buscarPedidoPorId = async () => {
-    const response = await fetch(`http://localhost:4000/Pedidos/${idPedido}`);
-    if (response.ok) {
-      return(
-        <h2 style={{ width: "300px", height: "150px", border: "1px solid black", borderRadius: "20px", display: "flex", flexDirection: "column" }}>
-         <br />
-         Restaurante: {response.restaurante}
-         <br />
-         Prato: {pedido.prato}
-         <br />
-         Quantidade: {pedido.quantidade}
-         </h2>
-       )
-    }
-};
+  return result
+}
+
+const buscarPedidoPorId = async () => {
+  const id = idPedido
+  await fetch(`http://localhost:4000/Pedidos/${id}`,{
+    method: "GET"
+  })
+  .then((res) => res.json())
+  .then((data) => {
+    setPedido(data)
+  })
     
-}*/}
+}
+
+const buscarPedidoPorRestaurante = async () => {
+  const restaurante = restaurantName
+  await fetch(`http://localhost:4000/pedidosRestaurante/${restaurante}`,{
+    method: "GET"
+  })
+  .then((res) => res.json())
+  .then((data) => {
+    setPedidosRestaurante(data)
+  })
+    
+}
+
+const patch = async (idPedido: string, restaurantNamePatch: string) => {
+  const id = idPedido
+  const restaurante = restaurantNamePatch
+  await fetch(`http://localhost:4000/PedidosPatch/${id}`,{
+    method: "PATCH",
+    headers: {
+      "Content-Type":"application/json",
+    },
+    body: JSON.stringify({restaurante}),
+  })
+  .then((res) => res.json()) 
+    .then((data) => {
+      setPedido(data)
+    })
+  
+}
+    
+const buscarPeloId = (pedidos: any, pedido: any): ReactNode => {
+  let result: ReactNode = null;
+
+  if (pedidos && pedido) {
+    pedidos.forEach((p: any) => {
+      if (p.id === pedido.id) {
+        result = (
+          <div>
+            <h2>Pedido Encontrado:</h2>
+            <h2 style={{ width: "300px", height: "150px", border: "1px solid black", borderRadius: "20px", display: "flex", flexDirection: "column" }}>
+              <br />
+              Restaurante: {pedido.restaurante}
+              <br />
+              Prato: {pedido.prato}
+              <br />
+              Quantidade: {pedido.quantidade}
+            </h2>
+          </div>
+        );
+      }
+    });
+  }
+
+  return result;
+};
 
 const deletePedido = async () => {
   const id = newIdDelete
@@ -102,9 +179,6 @@ const deletePedido = async () => {
     method: "DELETE"
   })
     .then((res) => res.json())
-    .then((data) => {
-      fetchData()
-    })
 }
 
   return (
@@ -166,11 +240,56 @@ const deletePedido = async () => {
           <button onClick={()=> {cadastraPedido()}} style={{marginTop: "10px", padding:"5px", backgroundColor: "red", color: "white", fontSize:"18px", fontWeight: "bold", border: "1px solid rgb(136, 2, 2)", borderRadius:"5px" }}>Cadastrar</button>
         </div>
         <div style={{ maxWidth: "300px" }}>{/* BUSCA POR ID */}
-          
+        <h1>Buscar Pedido por Id</h1>
+          <input 
+              type="text"
+              value={idPedido}
+              onChange={(e) => {setIdPedido(e.target.value)}} placeholder="Id do pedido" style={{padding: "5px", marginBottom: "5px", borderRadius: "7px", border: "1px solid black"}}/>
+              
+          <br />
+          <button onClick={()=> {buscarPedidoPorId();}} style={{marginTop: "10px", padding:"5px", backgroundColor: "red", color: "white", fontSize:"18px", fontWeight: "bold", border: "1px solid rgb(136, 2, 2)", borderRadius:"5px" }}>Buscar</button>
+          {buscarPeloId(pedidos, pedido)}
+        </div>
+        <div style={{ maxWidth: "300px" }}>{/* PATCH */}
+          <h1>Alterar Restaurante "PATCH"</h1>
+          <input
+            type="text"
+            value={idPedidoPatch}
+            onChange={(e) => setIdPedidoPatch(e.target.value)}
+            placeholder="Id do pedido"
+            style={{ padding: "5px", marginBottom: "5px", borderRadius: "7px", border: "1px solid black" }}
+          />
+          <input
+            type="text"
+            value={restaurantNamePatch}
+            onChange={(e) => setRestaurantNamePatch(e.target.value)}
+            placeholder="Nome Restaurante"
+            style={{ padding: "5px", marginBottom: "5px", borderRadius: "7px", border: "1px solid black" }}
+          />
+          <br />
+          <button
+            onClick={() => {
+              patch(idPedidoPatch, restaurantNamePatch); alert("oi")
+            }}
+            style={{ marginTop: "10px", padding: "5px", backgroundColor: "red", color: "white", fontSize: "18px", fontWeight: "bold", border: "1px solid rgb(136, 2, 2)", borderRadius: "5px" }}
+          >
+            Alterar
+          </button>
+        </div>
+        <div style={{ maxWidth: "300px" }}>{/* BUSCA POR RESTAURANTE */}
+        <h1>Buscar Pedido por Restaurante</h1>
+          <input 
+              type="text"
+              value={restaurantName}
+              onChange={(e) => {setRestaurantName(e.target.value)}} placeholder="Nome restaurante" style={{padding: "5px", marginBottom: "5px", borderRadius: "7px", border: "1px solid black"}}/>
+              
+          <br />
+          <button onClick={()=> {buscarPedidoPorRestaurante();}} style={{marginTop: "10px", padding:"5px", backgroundColor: "red", color: "white", fontSize:"18px", fontWeight: "bold", border: "1px solid rgb(136, 2, 2)", borderRadius:"5px" }}>Buscar</button>
+          {listaPedidosRestaurante(pedidosRestaurante)}
         </div>
       </div>
     </React.Fragment>
   )
 }
 
-export default FreestylePage
+export default CentralPedidosPage
